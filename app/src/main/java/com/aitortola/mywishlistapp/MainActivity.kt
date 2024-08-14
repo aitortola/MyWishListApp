@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
                             .padding(innerPadding),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        HomeView()
+                        Navigation()
                     }
                 }
             }

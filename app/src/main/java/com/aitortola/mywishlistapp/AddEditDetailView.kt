@@ -3,7 +3,6 @@ package com.aitortola.mywishlistapp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,60 +35,59 @@ fun AddEditDetailView(
         topBar = {
             AppBarView(
                 title =
-                if (id != 0L) stringResource(id = R.string.update_wish) else stringResource(id = R.string.add_wish)
-            )
-        }) {
+                if (id != 0L) stringResource(id = R.string.update_wish)
+                else stringResource(id = R.string.add_wish)
+            ) { navController.navigateUp() }
+        },
+
+        ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
                 .padding(it)
                 .wrapContentSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Spacer(modifier = Modifier.height(10.dp))
-            WishTextField(
-                label = "Title",
+
+            WishTextField(label = "Title",
                 value = viewModel.wishTitleState,
-                onValueChanged = { title ->
-                    viewModel.onWishTitleChanged(title)
-                }
-            )
+                onValueChanged = {
+                    viewModel.onWishTitleChanged(it)
+                })
 
             Spacer(modifier = Modifier.height(10.dp))
-            WishTextField(
-                label = "Description",
+
+            WishTextField(label = "Description",
                 value = viewModel.wishDescriptionState,
-                onValueChanged = { description ->
-                    viewModel.onWishDescriptionChanged(description)
-                }
-            )
+                onValueChanged = {
+                    viewModel.onWishDescriptionChanged(it)
+                })
 
             Spacer(modifier = Modifier.height(10.dp))
-            Button(
-                onClick = {
-                    if (viewModel.wishTitleState.isNotEmpty() &&
-                        viewModel.wishDescriptionState.isNotEmpty()) {
-                        // TODO UpdateWish
-                    } else {
-                        // TODO AddWish
-                    }
+            Button(onClick = {
+                if (viewModel.wishTitleState.isNotEmpty() &&
+                    viewModel.wishDescriptionState.isNotEmpty()
+                ) {
+                    //TODO UpdateWish
+                } else {
+                    // TODO AddWish
                 }
-            ) {
+
+            }) {
                 Text(
-                    text = (
-                            if (id != 0L)
-                                stringResource(id = R.string.update_wish)
-                            else
-                                stringResource(
-                                    id = R.string.add_wish
-                                )
-                            ),
-                    style = TextStyle(fontSize = 18.sp)
+                    text = if (id != 0L) stringResource(id = R.string.update_wish)
+                    else stringResource(
+                        id = R.string.add_wish
+                    ),
+                    style = TextStyle(
+                        fontSize = 18.sp
+                    )
                 )
             }
         }
     }
+
 }
 
 @Composable
