@@ -39,8 +39,7 @@ fun AddEditDetailView(
                 else stringResource(id = R.string.add_wish)
             ) { navController.navigateUp() }
         },
-
-        ) {
+    ) {
         Column(
             modifier = Modifier
                 .padding(it)
