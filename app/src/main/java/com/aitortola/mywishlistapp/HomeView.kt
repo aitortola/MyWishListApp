@@ -9,13 +9,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
+import androidx.compose.material.DismissDirection
+import androidx.compose.material.DismissValue
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.rememberDismissState
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
@@ -24,20 +30,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.aitortola.mywishlistapp.data.DummyWish
 import com.aitortola.mywishlistapp.data.Wish
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeView(
     navController: NavController,
     viewModel: WishViewModel
 ) {
     val context = LocalContext.current
+    val scaffoldState = rememberScaffoldState()
     Scaffold(
+        scaffoldState = scaffoldState,
         topBar = {
-            AppBarView(title = "WishList") {
-                Toast.makeText(context, "Button Clicked", Toast.LENGTH_SHORT).show()
-            }
+            AppBarView(title = "WishList")
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -46,7 +52,7 @@ fun HomeView(
                 backgroundColor = Color.Black,
                 onClick = {
                     Toast.makeText(context, "FloatingActionButton Clicked", Toast.LENGTH_SHORT).show()
-                    navController.navigate(Screen.AddWishScreen.route)
+                    navController.navigate(Screen.AddWishScreen.route + "/0L")
                 }
             ) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = null)
@@ -59,11 +65,34 @@ fun HomeView(
                 .fillMaxSize()
                 .padding(it)
         ) {
-            items(wishList.value) {
+            items(wishList.value, key = { wish -> wish.id }) {
                 wish ->
-                WhishItem(wish = wish) {
+                val dismissState = rememberDismissState(
+                    confirmStateChange = {
+                        if (it == DismissValue.DismissedToEnd || it == DismissValue.DismissedToStart) {
+                            viewModel.deleteWish(wish)
+                        }
+                        true
+                    }
+                )
 
-                }
+                SwipeToDismiss(
+                    state = dismissState,
+                    background = {},
+                    directions = setOf(
+                        DismissDirection.StartToEnd,
+                        DismissDirection.EndToStart
+                    ),
+                    dismissThresholds = {
+                        FractionalThreshold(0.25f)
+                    },
+                    dismissContent = {
+                        WhishItem(wish = wish) {
+                            val id = wish.id
+                            navController.navigate(Screen.AddWishScreen.route + "/$id")
+                        }
+                    }
+                )
             }
         }
     }
@@ -72,7 +101,8 @@ fun HomeView(
 @Composable
 fun WhishItem(wish: Wish, onClick: () -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(top = 8.dp, start = 8.dp, end = 8.dp)
             .clickable {
                 onClick()
