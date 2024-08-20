@@ -21,4 +21,5 @@ class WishRepository(private val wishDao: WishDao) {
     suspend fun deleteWish(wish: Wish){
         wishDao.deleteWish(wish)
     }
+
 }

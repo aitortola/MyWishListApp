@@ -50,8 +50,8 @@ class WishViewModel(
     }
 
     fun deleteWish(wish: Wish){
-        viewModelScope.launch(Dispatchers.IO) { // Optimizamos la utilización de los hilos para lectura/escritura
-            wishRepository.deleteWish(wish = wish)
+        viewModelScope.launch(Dispatchers.IO) {
+            wishRepository.deleteWish(wish= wish)
         }
     }
 }
